@@ -56,7 +56,6 @@
 <md-toolbar layout="row">
     <div class="md-toolbar-tools" layout="row" layout-align="space-between center">
         <h1 style="font-family: 'Lobster', cursive; font-size: larger">Loggify</h1>
-        <!--<md-button ng-click="vm.download()"><md-icon>file_download</md-icon>&nbsp;Download json</md-button>-->
     </div>
 </md-toolbar>
 <md-content layout="column" flex layout-padding>
@@ -99,44 +98,7 @@
             </md-card-content>
         </md-card>
     </div>
-    <!--<h3 class="md-headline">Commands</h3>
-    <div layout="column">
-        <div ng-repeat="(index, command) in vm.file.content">
-            <md-card>
-                <md-card-title>
-                    <md-card-title-text>
-                        <span class="md-headline">{{command.name}}&nbsp;<md-button class="md-icon-button" ng-click="vm.file.content.splice(index, 1)"><md-icon>delete</md-icon></md-button></span>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-card-content style="padding-top: 16px;" layout="row">
-                    <div flex layout="row" layout-wrap>
-                        <div flex-gt-md="50" flex="100" layout="row" ng-repeat="(name, detail) in command.details">
-                            <md-input-container flex class="md-accent">
-                                <label>{{name}}</label>
-                                <textarea ng-model="vm.file.content[index].details[name]" columns="10" rows="5"></textarea>
-                            </md-input-container>
-                            <md-button class="md-icon-button" ng-click="vm.remDetail(index, name)"><md-icon>delete</md-icon></md-button>
-                        </div>
-                        <div>
-                            <md-input-container class="md-accent">
-                                <label>Flag</label>
-                                <md-select ng-init="newName='default'" ng-model="newName" class="md-accent">
-                                    <md-option value="default" class="md-accent">
-                                        default
-                                    </md-option>
-                                    <md-option ng-repeat="flag in vm.file.index" value="{{flag}}" class="md-accent">
-                                        {{flag}}
-                                    </md-option>
-                                </md-select>
-                            </md-input-container>
-                            <md-button class="ng-raised" ng-click="vm.file.content[index].details[newName]= ''">Add new</md-button>
-                        </div>
-                    </div>
-                </md-card-content>
-            </md-card>
-        </div>-->
     </div>
-    <!--<pre>{{vm.file |json}}</pre>-->
 </md-content>
 
 
@@ -174,26 +136,6 @@
             content: []
         };
 
-        /*vm.download = function () {
-
-            if (!vm.file) {
-                console.error('No data');
-                return;
-            }
-            var filename = 'how2.json';
-            var data = JSON.stringify(vm.file, undefined, 2);
-
-            var blob = new Blob([data], {type: 'text/json'}),
-                    e = document.createEvent('MouseEvents'),
-                    a = document.createElement('a');
-
-            a.download = filename;
-            a.href = window.URL.createObjectURL(blob);
-            a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
-            e.initMouseEvent('click', true, false, window,
-                    0, 0, 0, 0, 0, false, false, false, false, 0, null);
-            a.dispatchEvent(e);
-        };*/
 
         function readFile (target) {
             var file = angular.copy(target.result);
