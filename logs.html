@@ -219,6 +219,10 @@
             });
             sortedLines[launch].forEach(function (lineObject) {
                 var line = lineObject.text;
+                if(javaFlag){
+                    lineObject.mark = 1;
+                    javaFlag = false;
+                }
                 if(line.indexOf('OS:')!= -1){
                     vm.os = line.substr(line.indexOf('OS:')+4);
                 }
@@ -261,10 +265,6 @@
                 }
                 if(line.indexOf('[STDOUT]')!= -1 && crashFlag){
                     lineObject.mark = 1;
-                }
-                if(javaFlag){
-                    lineObject.mark = 1;
-                    javaFlag = false;
                 }
             });
             vm.fileName = target.file.name;
