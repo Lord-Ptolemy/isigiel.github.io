@@ -236,6 +236,9 @@
                 if(line.indexOf('---- Minecraft Crash Report ----')!= -1){
                     crashFlag = true;
                 }
+                if(line.indexOf('Error occurred')!= -1){
+                    lineObject.mark = 1;
+                }
                 if(line.indexOf('[java.lang.Throwable$WrappedPrintStream:println:-1]: java.lang.NoSuchMethodError: com.google.common.io.CharSource.readLines(Lcom/google/common/io/LineProcessor;)Ljava/lang/Object;')!= -1){
                     vm.crack = true;
                     lineObject.mark = 2;
