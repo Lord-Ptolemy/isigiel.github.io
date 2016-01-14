@@ -47,21 +47,11 @@
                 </div>
 
                 <div flex layout="row">
-                    <div flex ng-if="vm.changes.adds[0]">
-                        <p>Additions</p>
+                    <div flex>
+                        <p>Changes</p>
                         <ul>
                             <li ng-repeat="add in vm.changes.adds">{{add}}</li>
-                        </ul>
-                    </div>
-                    <div flex ng-if="vm.changes.updates[0]">
-                        <p>Updates</p>
-                        <ul>
                             <li ng-repeat="update in vm.changes.updates">{{update}}</li>
-                        </ul>
-                    </div>
-                    <div flex ng-if="vm.changes.removes[0]">
-                        <p>Deletions</p>
-                        <ul>
                             <li ng-repeat="remove in vm.changes.removes">{{remove}}</li>
                         </ul>
                     </div>
