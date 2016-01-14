@@ -98,6 +98,7 @@
         vm.updatePack = function () {
             $http.get(vm.url).then(function (data) {
                 vm.data = data.data;
+                vm.data.builds.reverse();
                 $mdToast.showSimple('Pack info loaded');
                 $log.info(data);
             }, function (err) {
