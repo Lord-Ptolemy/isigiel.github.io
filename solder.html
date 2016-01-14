@@ -134,7 +134,7 @@
             b2.mods.forEach(function (mod) {
                 if(premods[mod.name]){
                     if(premods[mod.name].version != mod.version){
-                        changes.updates.push(mod.pretty_name+" has been upated to "+ mod.version);
+                        changes.updates.push(mod.pretty_name+" to "+ mod.version);
                     }
                 } else {
                     changes.adds.push(mod.pretty_name);
