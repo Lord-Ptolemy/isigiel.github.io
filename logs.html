@@ -64,17 +64,8 @@
         This project is an early ßeta and not yet for public use!
         <br><br>
         <h1>Select a Log-File for analysis</h1>
-        <!--<md-input-container class="md-accent">
-            <label>File</label>
-            <input ng-model="vm.fileName" type="text" id="uploadFile" readonly>
-        </md-input-container>-->
-        <!--<input class="mdl-textfield__input" placeholder="File" type="text" id="uploadFile" readonly/>-->
-        <!--<md-button class="md-icon-button mdl-button&#45;&#45;file"><md-icon>attach_file</md-icon>--><input type="file" on-read-file="vm.readFile($fileContent)"><!--</md-button>-->
-        <!--<div class="mdl-button mdl-button&#45;&#45;primary mdl-button&#45;&#45;icon mdl-button&#45;&#45;file">
-            <md-icon>attach_file</md-icon><input type="file" id="uploadBtn">
-        </div>-->
+       <input type="file" on-read-file="vm.readFile($fileContent)">
     </div>
-        <!--<input type="file" ng-model="vm.file" on-read-file="vm.readFile($fileContent)" />-->
     <div layout="column" ng-if="vm.loaded">
         <md-card>
             <md-card-title>
