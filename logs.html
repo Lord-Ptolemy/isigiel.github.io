@@ -80,6 +80,7 @@
                 Modpack: {{vm.pack}} <br>
                 Java: {{vm.jre}} <br>
                 Operating System: {{vm.os}}</p>
+                <span ng-if="vm.javaError">Possible Java-Error: <br><span class="logs">{{vm.javaError[0]}}<br>{{vm.javaError[1]}}</span></span>
                 <span ng-if="vm.falseJava">Program Files (x86) detected!</span>
                 <span ng-if="vm.crack">Possible cracked launcher!</span>
                 <span ng-if="vm.cause">Attention: <span class="logs">{{vm.cause}}</span></span>
@@ -222,6 +223,7 @@
                 if(javaFlag){
                     lineObject.mark = 1;
                     javaFlag = false;
+                    vm.javaError[1] = line;
                 }
                 if(line.indexOf('OS:')!= -1){
                     vm.os = line.substr(line.indexOf('OS:')+4);
@@ -244,6 +246,8 @@
                 if(line.indexOf('Error occurred')!= -1){
                     lineObject.mark = 1;
                     javaFlag = true;
+                    vm.javaError = [];
+                    vm.javaError[0] = line;
                 }
                 if(line.indexOf('[java.lang.Throwable$WrappedPrintStream:println:-1]: java.lang.NoSuchMethodError: com.google.common.io.CharSource.readLines(Lcom/google/common/io/LineProcessor;)Ljava/lang/Object;')!= -1){
                     vm.crack = true;
