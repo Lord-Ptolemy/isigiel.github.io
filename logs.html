@@ -1,0 +1,305 @@
+<html lang="en" ng-app="how2">
+<head>
+    <title>Log-Analysis</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
+    <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
+    <!-- Angular Material style sheet -->
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0-rc7/angular-material.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/styles/default.min.css">
+    <style>
+        md-card{
+            background-color: rgba(255,255,255,0.05);
+        }
+        textarea{
+            background-color: rgba(0,0,0,0.05);
+        }
+        .mdl-button--file input {
+            cursor: pointer;
+            height: 100%;
+            right: 0;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            width: 300px;
+            z-index: 4;
+        }
+
+        .mdl-textfield--file .mdl-textfield__input {
+            box-sizing: border-box;
+            width: calc(100% - 32px);
+        }
+        .mdl-textfield--file .mdl-button--file {
+            right: 0;
+        }
+        .crash{
+            color: #EF5350;
+        }
+        .crack{
+            color: #00BCD4;
+        }
+        .logs{
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body ng-cloak ng-controller="AppController as vm" layout="column">
+<!--
+  Your HTML content here
+-->
+<md-toolbar layout="row">
+    <div class="md-toolbar-tools" layout="row" layout-align="space-between center">
+        <h1 style="font-family: 'Lobster', cursive; font-size: larger">Loggify</h1>
+        <!--<md-button ng-click="vm.download()"><md-icon>file_download</md-icon>&nbsp;Download json</md-button>-->
+    </div>
+</md-toolbar>
+<md-content layout="column" flex layout-padding>
+    <div>
+        This project is an early ßeta and not yet for public use!
+        <br><br>
+        <h1>Select a Log-File for analysis</h1>
+        <md-input-container class="md-accent">
+            <label>File</label>
+            <input ng-model="vm.fileName" type="text" id="uploadFile" readonly>
+        </md-input-container>
+        <!--<input class="mdl-textfield__input" placeholder="File" type="text" id="uploadFile" readonly/>-->
+        <md-button class="md-icon-button mdl-button--file"><md-icon>attach_file</md-icon><input type="file" id="uploadBtn" on-read-file="vm.readFile($fileContent)"></md-button>
+        <!--<div class="mdl-button mdl-button&#45;&#45;primary mdl-button&#45;&#45;icon mdl-button&#45;&#45;file">
+            <md-icon>attach_file</md-icon><input type="file" id="uploadBtn">
+        </div>-->
+    </div>
+        <!--<input type="file" ng-model="vm.file" on-read-file="vm.readFile($fileContent)" />-->
+    <div layout="column" ng-if="vm.loaded">
+        <md-card>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">System Info</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content style="padding-top: 16px;" layout-wrap layout="column">
+                <p>Launcher Build: {{vm.launcherBuild}} <br>
+                MC-Runs detected: {{vm.launches}} <br>
+                RAM: {{vm.ram}} <br>
+                Modpack: {{vm.pack}} <br>
+                Java: {{vm.jre}} <br>
+                Operating System: {{vm.os}}</p>
+                <span ng-if="vm.falseJava">Program Files (x86) detected!</span>
+                <span ng-if="vm.crack">Possible cracked launcher!</span>
+                <span ng-if="vm.cause">Attention: <span class="logs">{{vm.cause}}</span></span>
+            </md-card-content>
+        </md-card>
+        <md-card>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">Latest launch</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content style="padding-top: 16px;" layout-wrap layout="column" class="logs">
+
+                    <span ng-repeat="line in vm.latest track by $index" ng-class="{ crash:line.mark==1, crack:line.mark==2}">{{line.text}}</span>
+
+            </md-card-content>
+        </md-card>
+    </div>
+    <!--<h3 class="md-headline">Commands</h3>
+    <div layout="column">
+        <div ng-repeat="(index, command) in vm.file.content">
+            <md-card>
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">{{command.name}}&nbsp;<md-button class="md-icon-button" ng-click="vm.file.content.splice(index, 1)"><md-icon>delete</md-icon></md-button></span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content style="padding-top: 16px;" layout="row">
+                    <div flex layout="row" layout-wrap>
+                        <div flex-gt-md="50" flex="100" layout="row" ng-repeat="(name, detail) in command.details">
+                            <md-input-container flex class="md-accent">
+                                <label>{{name}}</label>
+                                <textarea ng-model="vm.file.content[index].details[name]" columns="10" rows="5"></textarea>
+                            </md-input-container>
+                            <md-button class="md-icon-button" ng-click="vm.remDetail(index, name)"><md-icon>delete</md-icon></md-button>
+                        </div>
+                        <div>
+                            <md-input-container class="md-accent">
+                                <label>Flag</label>
+                                <md-select ng-init="newName='default'" ng-model="newName" class="md-accent">
+                                    <md-option value="default" class="md-accent">
+                                        default
+                                    </md-option>
+                                    <md-option ng-repeat="flag in vm.file.index" value="{{flag}}" class="md-accent">
+                                        {{flag}}
+                                    </md-option>
+                                </md-select>
+                            </md-input-container>
+                            <md-button class="ng-raised" ng-click="vm.file.content[index].details[newName]= ''">Add new</md-button>
+                        </div>
+                    </div>
+                </md-card-content>
+            </md-card>
+        </div>-->
+    </div>
+    <!--<pre>{{vm.file |json}}</pre>-->
+</md-content>
+
+
+<!-- Angular Material requires Angular.js Libraries -->
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.0.0/lodash.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<!-- Angular Material Library -->
+<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0-rc7/angular-material.min.js"></script>
+
+
+<script>
+    var app = angular.module('how2', ['ngMaterial']);
+
+    app.config(
+            function($mdThemingProvider) {
+                $mdThemingProvider.theme('default')
+                        .primaryPalette('deep-purple')
+                        .accentPalette('cyan')
+                        .dark();
+            }
+    );
+
+    app.controller('AppController', function() {
+        var vm = this;
+        vm.loaded = false;
+        vm.readFile = readFile;
+        vm.file = {
+            index: [],
+            content: []
+        };
+
+        /*vm.download = function () {
+
+            if (!vm.file) {
+                console.error('No data');
+                return;
+            }
+            var filename = 'how2.json';
+            var data = JSON.stringify(vm.file, undefined, 2);
+
+            var blob = new Blob([data], {type: 'text/json'}),
+                    e = document.createEvent('MouseEvents'),
+                    a = document.createElement('a');
+
+            a.download = filename;
+            a.href = window.URL.createObjectURL(blob);
+            a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+            e.initMouseEvent('click', true, false, window,
+                    0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            a.dispatchEvent(e);
+        };*/
+
+        function readFile (target) {
+            var file = angular.copy(target.result);
+            var lines;
+            lines = _.split(file, /\n/);
+            var launcherline = lines[lines.length-2];
+            vm.launcherBuild = launcherline.substr(launcherline.indexOf('[')+2, launcherline.indexOf(']')-2);
+            var sortedLines = {
+                0: []
+            };
+            var launch = 0;
+            var crashFlag = false;
+            var causeFlag = false;
+            lines.forEach(function (line) {
+                var saveLine = {
+                    text: line
+                };
+               if(line.indexOf('Forge Mod Loader version')!= -1 && line.indexOf('loading')!= -1){
+                   launch++;
+                   sortedLines[launch] = [];
+               }
+                sortedLines[launch].push(saveLine);
+            });
+            sortedLines[launch].forEach(function (lineObject) {
+                var line = lineObject.text;
+                if(line.indexOf('OS:')!= -1){
+                    vm.os = line.substr(line.indexOf('OS:')+4);
+                }
+                if(line.indexOf('Xmx')!= -1){
+                    vm.ram = line.substr(line.indexOf('Xmx')+3,5);
+                }
+                if(line.indexOf('modpacks')!= -1){
+                    var packPath = line.substr(line.indexOf('modpacks')+9);
+                    console.log(packPath);
+                    vm.pack = packPath.substr(0, packPath.indexOf('\\'));
+                }
+                if(line.indexOf('jre')!= -1){
+                    var jrePath = line.substr(line.indexOf('jre'));
+                    vm.jre = jrePath.substr(0, jrePath.indexOf('\\'));
+                }
+                if(line.indexOf('---- Minecraft Crash Report ----')!= -1){
+                    crashFlag = true;
+                }
+                if(line.indexOf('[java.lang.Throwable$WrappedPrintStream:println:-1]: java.lang.NoSuchMethodError: com.google.common.io.CharSource.readLines(Lcom/google/common/io/LineProcessor;)Ljava/lang/Object;')!= -1){
+                    vm.crack = true;
+                    lineObject.mark = 2;
+                }
+                if(line.indexOf('Caused by:')!= -1){
+                    causeFlag = true;
+                    lineObject.mark = 1;
+                    vm.cause = line;
+                }
+                if(line.indexOf('Program Files (x86)')!= -1){
+                    vm.falseJava = true;
+                }
+                if(line.indexOf('...')!= -1){
+                    causeFlag = false;
+                }
+                if(line.indexOf('at')!= -1 && causeFlag){
+                    lineObject.mark = 1;
+                }
+                if(line.indexOf('[STDOUT]')!= -1 && crashFlag){
+                    lineObject.mark = 1;
+                }
+            });
+            vm.fileName = target.file.name;
+            console.log(lines);
+            console.log(vm.launcherBuild);
+            console.log(sortedLines);
+            vm.launches = launch;
+            vm.latest = sortedLines[launch];
+            vm.loaded = true;
+        }
+    });
+
+    app.directive('onReadFile', function ($parse) {
+        return {
+            restrict: 'A',
+            scope: false,
+            link: function(scope, element, attrs) {
+                var fn = $parse(attrs.onReadFile);
+
+                element.on('change', function(onChangeEvent) {
+                    var reader = new FileReader();
+
+                    reader.onload = function(onLoadEvent) {
+                        scope.$apply(function() {
+                            fn(scope, {$fileContent:onLoadEvent.target});
+                        });
+                    };
+
+                    reader.readAsText((onChangeEvent.srcElement || onChangeEvent.target).files[0]);
+                    reader.file=(onChangeEvent.srcElement || onChangeEvent.target).files[0];
+                });
+            }
+        };
+    });
+</script>
+</body>
+
+</html>
