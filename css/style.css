@@ -57,15 +57,15 @@ body, html {
   height: 100%;
   font: 400 16px/26px 'Source Sans Pro', sans-serif;;
   color: #fff; /* Font Color Color Here */
-  background: #f97e6e; 
+  background: #00796B;
 }
 
 body {
-	background-color: #f97e6e; /* Change Background Color Here */
+	background-color: #00796B; /* Change Background Color Here */
 }
 
 a, a:visited {
-  color: #0088cc;
+  color: #F48FB1;
   cursor: pointer;
   text-decoration: none;
   -webkit-transition: all 0.15s ease;
@@ -80,7 +80,7 @@ a.highlight:hover {
 }
 
 a:hover, a:visited:hover {
-    color: #006699; }
+    color: #EC407A; }
 
 img.avatar {
 	width: 150px;
