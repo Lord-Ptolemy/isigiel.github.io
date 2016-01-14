@@ -1,0 +1,153 @@
+<html lang="en" ng-app="StarterApp">
+
+<head>
+    <meta name="viewport" content="initial-scale=1" />
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0-rc1/angular-material.min.css">
+</head>
+
+<body layout="column" ng-controller="AppController as vm">
+<md-toolbar layout="row">
+    <div class="md-toolbar-tools">
+        <h1><em>Project</em>&nbsp;<strong>SolderChange</strong></h1>
+    </div>
+</md-toolbar>
+<div layout="row" flex>
+    <div layout="column" flex id="content">
+        <md-content layout="column" flex class="md-padding">
+            <p>
+                This project is an early beta and not yet for public use!<br>
+                To use it please paste the solder api url of a pack down below.
+            </p>
+            <md-input-container>
+                <label>URL</label>
+                <input type="text" ng-model="vm.url" ng-change="vm.updatePack()">
+            </md-input-container>
+            <div ng-if="vm.data && vm.url">
+
+                <p class="md-headline">You selected <strong>{{vm.data.display_name}}</strong></p>
+                <div layout="row" layout-align="start center">
+                    <span>show changes between</span>
+                    <md-input-container>
+                        <label>Build 1</label>
+                        <md-select ng-model="vm.build1" ng-change="vm.update()">
+                            <md-option ng-repeat="build in vm.data.builds">
+                                {{build}}
+                            </md-option>
+                        </md-select>
+                    </md-input-container>
+                    <span>&nbsp;and&nbsp;</span>
+                    <md-input-container>
+                        <label>Build 2</label>
+                        <md-select ng-model="vm.build2" ng-change="vm.update()">
+                            <md-option ng-repeat="build in vm.data.builds">
+                                {{build}}
+                            </md-option>
+                        </md-select>
+                    </md-input-container>
+                </div>
+
+                <div flex layout="row">
+                    <div flex ng-if="vm.changes.adds[0]">
+                        <p>Additions</p>
+                        <ul>
+                            <li ng-repeat="add in vm.changes.adds">{{add}}</li>
+                        </ul>
+                    </div>
+                    <div flex ng-if="vm.changes.updates[0]">
+                        <p>Updates</p>
+                        <ul>
+                            <li ng-repeat="update in vm.changes.updates">{{update}}</li>
+                        </ul>
+                    </div>
+                    <div flex ng-if="vm.changes.removes[0]">
+                        <p>Deletions</p>
+                        <ul>
+                            <li ng-repeat="remove in vm.changes.removes">{{remove}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </md-content>
+    </div>
+</div>
+<!-- Angular Material Dependencies -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-aria.min.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0-rc1/angular-material.min.js"></script>
+
+<script>
+    var app = angular.module('StarterApp', ['ngMaterial']);
+
+    app.controller('AppController', function($http, $mdToast, $log) {
+        var vm = this;
+        var request = false;
+        vm.build1 = '';
+        vm.build2 = '';
+        vm.selection = {};
+        vm.updatePack = function () {
+            $http.get(vm.url).then(function (data) {
+                vm.data = data.data;
+                $mdToast.showSimple('Pack info loaded');
+                $log.info(data);
+            }, function (err) {
+                $log.warn(err);
+                $mdToast.showSimple('URL invalid');
+            })
+        };
+
+        vm.update = function () {
+            if (!vm.build1 || !vm.build2){
+                return;
+            }
+            var build1, build2;
+            $http.get(vm.url+'/'+vm.build1.replace(/ /g,'')).then(function (res) {
+                build1 = res.data;
+                $log.info(build1);
+                if(request)
+                    vm.changes = generate(build1, build2);
+                request = true;
+            });
+            $http.get(vm.url+'/'+vm.build2.replace(/ /g,'')).then(function (res) {
+                build2 = res.data;
+                $log.info(build2);
+                if(request)
+                    vm.changes = generate(build1, build2);
+                request = true;
+            })
+        };
+
+        function generate (b1, b2){
+            var changes = {
+                adds: [],
+                updates: [],
+                removes: []
+            };
+            var premods = {}, nowmods = {};
+            b1.mods.forEach(function (mod) {
+                premods[mod.name] = mod;
+            });
+            b2.mods.forEach(function (mod) {
+                if(premods[mod.name]){
+                    if(premods[mod.name].version != mod.version){
+                        changes.updates.push(mod.name+" has been upated to "+ mod.version);
+                    }
+                } else {
+                    changes.adds.push(mod.name + " has been added");
+                }
+            });
+            b2.mods.forEach(function (mod) {
+                nowmods[mod.name] = mod;
+            });
+            b1.mods.forEach(function (mod) {
+                if(!nowmods[mod.name])
+                    changes.removes.push(mod.name+" has been removed");
+            });
+            return changes;
+        }
+    });
+</script>
+</body>
+
+</html>
