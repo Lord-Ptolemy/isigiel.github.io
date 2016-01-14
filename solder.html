@@ -137,7 +137,7 @@
                         changes.updates.push(mod.pretty_name+" has been upated to "+ mod.version);
                     }
                 } else {
-                    changes.adds.push(mod.pretty_name + " has been added");
+                    changes.adds.push(mod.pretty_name);
                 }
             });
             b2.mods.forEach(function (mod) {
@@ -145,7 +145,7 @@
             });
             b1.mods.forEach(function (mod) {
                 if(!nowmods[mod.name])
-                    changes.removes.push(mod.pretty_name+" has been removed");
+                    changes.removes.push(mod.pretty_name);
             });
             return changes;
         }
