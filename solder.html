@@ -44,11 +44,15 @@
                             </md-option>
                         </md-select>
                     </md-input-container>
+                    <div style="width: 10%;"></div>
+                    <md-button ng-show="vm.changes.adds[0] || vm.changes.updates[0] || vm.changes.removes[0]" data-clipboard-target="#data" class="md-raised" id="copy">Copy to clipboard</md-button>
                 </div>
 
-                <div flex layout="row">
-                    <div flex>
+                <div flex layout="column">
+                    <div ng-show="vm.changes.adds[0] || vm.changes.updates[0] || vm.changes.removes[0]">
                         <p>Changes</p>
+                    </div>
+                    <div flex id="data">
                         <p ng-if="vm.changes.adds[0]">
                             Additions <br>
                             <span  ng-repeat="add in vm.changes.adds">
@@ -77,10 +81,12 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-aria.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.5/clipboard.min.js"></script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0-rc1/angular-material.min.js"></script>
 
 <script>
+    new Clipboard('#copy');
     var app = angular.module('StarterApp', ['ngMaterial']);
 
     app.controller('AppController', function($http, $mdToast, $log) {
