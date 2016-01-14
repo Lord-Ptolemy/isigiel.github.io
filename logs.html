@@ -206,6 +206,7 @@
             var launch = 0;
             var crashFlag = false;
             var causeFlag = false;
+            var javaFlag = false;
             lines.forEach(function (line) {
                 var saveLine = {
                     text: line
@@ -238,6 +239,7 @@
                 }
                 if(line.indexOf('Error occurred')!= -1){
                     lineObject.mark = 1;
+                    javaFlag = true;
                 }
                 if(line.indexOf('[java.lang.Throwable$WrappedPrintStream:println:-1]: java.lang.NoSuchMethodError: com.google.common.io.CharSource.readLines(Lcom/google/common/io/LineProcessor;)Ljava/lang/Object;')!= -1){
                     vm.crack = true;
@@ -259,6 +261,10 @@
                 }
                 if(line.indexOf('[STDOUT]')!= -1 && crashFlag){
                     lineObject.mark = 1;
+                }
+                if(javaFlag){
+                    lineObject.mark = 1;
+                    javaFlag = false;
                 }
             });
             vm.fileName = target.file.name;
